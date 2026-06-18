@@ -1,117 +1,143 @@
 # Futon
 
-A fast, minimalist **TUI manga reader** written in Go.
+<p><br/></p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2b1cd5ba-eb66-4632-82d8-284f7c1e3780" alt="Futon Logo" style="width: 192px" />
+</p>
+<p><br/></p>
 
-Futon renders manga pages directly in your terminal using the Kitty Graphics Protocol — no external viewer needed. Search multiple manga sources, browse chapters, and read with smooth image rendering and Vim-like navigation.
+Một **terminal manga reader** nhanh, gọn nhẹ viết bằng Go.
 
-## Features
+Futon render ảnh manga trực tiếp trong terminal của bạn qua **Kitty Graphics Protocol** hoặc **Sixel** — không cần phần mềm xem ảnh rời. Tìm kiếm truyện từ nhiều nguồn, duyệt chapter, và đọc với phím tắt kiểu Vim.
 
-- **Inline image rendering** via Kitty Graphics Protocol (Sixel fallback)
-- **Multi-source support** — MangaDex, OTruyen (switch with `tab`)
-- **Favorites & Reading history** — bookmark manga, resume where you left off
-- **Offline image download** — save individual pages with `ctrl+d`
-- **Chapter preloading** — seamless transition to next chapter
-- **LRU image cache** (20 entries) — fast page flipping
-- **Quick jump** — type a chapter number then `enter`
-- **Language filter** — `/lang vi` or `/lang en` for MangaDex chapters
-- **Vim-like navigation** — arrow keys, number jumps
+## Tính năng nổi bật
 
-## Prerequisites
+- **Render ảnh trong terminal** — Kitty Graphics Protocol hoặc Sixel
+- **Đa nguồn truyện** — MangaDex, OTruyen (chuyển bằng `tab`) (sắp có thêm)
+- **Favorites & Lịch sử đọc** — đánh dấu truyện yêu thích, đọc tiếp từ trang đã dừng
+- **Tải ảnh** — lưu trang bằng `ctrl+d`
+- **Preload chapter kế tiếp** — chuyển chapter mượt mà, không chờ load
+- **LRU image cache** — lật trang nhanh như chớp
+- **Jump nhanh** — gõ số chapter rồi `enter`
+- **Lọc ngôn ngữ** — `/lang vi` hoặc `/lang en` cho MangaDex
+- **Phím tắt kiểu Vim** — phím mũi tên, nhảy số
 
-A terminal that supports the **Kitty Graphics Protocol**:
+## Yêu cầu
 
-| Terminal | Support |
-|----------|---------|
-| [Kitty](https://sw.kovidgoyal.net/kitty/) | Native |
-| [WezTerm](https://wezfurlong.org/wezterm/) | Native |
-| [Ghostty](https://ghostty.org/) | Native |
-| Others | Sixel fallback |
+Terminal hỗ trợ **Kitty Graphics Protocol** hoặc **Sixel**:
 
-## Installation
+| Terminal | Protocol |
+|----------|----------|
+| [Kitty](https://sw.kovidgoyal.net/kitty/) | Kitty (native) |
+| [WezTerm](https://wezfurlong.org/wezterm/) | Kitty + Sixel |
+| [Ghostty](https://ghostty.org/) | Kitty + Sixel |
+| [foot](https://codeberg.org/dnkl/foot) | Sixel |
+| [iTerm2](https://iterm2.com/) | Sixel |
+| [Konsole](https://konsole.kde.org/) | Sixel |
+| [mlterm](https://github.com/arakiken/mlterm) | Sixel |
+| [XTerm](https://invisible-island.net/xterm/) | Sixel (compile với `--enable-sixel`) |
 
-### From source
+> **Lưu ý:** Kitty graphics nhanh và mượt hơn Sixel trên cùng một terminal. Nếu terminal bạn hỗ trợ cả hai, Futon sẽ ưu tiên dùng Kitty.
+
+## Hướng dẫn Cài đặt
+
+### Tự động (khuyên dùng)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/KabosuNeko/Futon/main/install.sh | bash
+```
+
+Script sẽ tự động phát hiện OS và architecture, tải bản release mới nhất từ GitHub Releases về và cài vào `/usr/local/bin/`.
+
+Để gỡ cài đặt:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/KabosuNeko/Futon/main/install.sh | bash -s -- uninstall
+```
+
+### Build từ source
 
 ```bash
 go install github.com/KabosuNeko/Futon@latest
 ```
 
-### Pre-built binaries
+### Binary
 
-Download the latest release for your platform from the [Releases](https://github.com/KabosuNeko/Futon/releases) page.
+Tải bản mới nhất từ [Releases](https://github.com/KabosuNeko/Futon/releases).
 
-Builds available for:
+Hỗ trợ:
 - Linux (amd64, arm64)
 - macOS (amd64, arm64)
 
-## Usage
+## Cách dùng
 
 ```bash
 futon
 ```
 
-### Keybindings
+### Hệ thống Phím tắt
 
-#### Search screen
+#### Màn hình tìm kiếm
 
-| Key | Action |
-|-----|--------|
-| `q` / `ctrl+c` | Quit |
-| `tab` | Switch manga source |
-| `enter` | Search / open selected manga |
-| `up` / `down` | Navigate results |
-| `/fav` | Show favorites |
-| `/his` | Show reading history |
-| `/lang vi\|en` | Set chapter language (MangaDex) |
+| Phím | Chức năng |
+|------|-----------|
+| `q` / `ctrl+c` | Thoát |
+| `tab` | Chuyển nguồn manga |
+| `enter` | Tìm kiếm / mở truyện đang chọn |
+| `lên` / `xuống` | Di chuyển danh sách |
+| `/fav` | Xem danh sách yêu thích |
+| `/his` | Xem lịch sử đọc |
+| `/lang vi\|en` | Chọn ngôn ngữ chapter (MangaDex) |
 
-#### Favorites / History
+#### Favorites / Lịch sử
 
-| Key | Action |
-|-----|--------|
-| `enter` | Open manga |
-| `d` | Remove entry |
-| `esc` | Back to search |
+| Phím | Chức năng |
+|------|-----------|
+| `enter` | Mở truyện |
+| `d` | Xoá khỏi danh sách |
+| `esc` | Quay lại tìm kiếm |
 
-#### Chapter list
+#### Danh sách chapter
 
-| Key | Action |
-|-----|--------|
-| `up` / `down` | Navigate chapters |
-| `ctrl+f` | Add/remove favorite |
-| `enter` | Open selected chapter |
-| `[number] + enter` | Jump to chapter |
-| `esc` | Back to manga search |
-| `q` / `ctrl+c` | Quit |
+| Phím | Chức năng |
+|------|-----------|
+| `lên` / `xuống` | Duyệt chapter |
+| `ctrl+f` | Thêm/xoá yêu thích |
+| `enter` | Mở chapter |
+| `[số] + enter` | Nhảy tới chapter |
+| `esc` | Quay lại tìm kiếm |
+| `q` / `ctrl+c` | Thoát |
 
 #### Reader
 
-| Key | Action |
-|-----|--------|
-| `→` / `l` | Next page |
-| `←` / `h` | Previous page |
-| `ctrl+d` | Download current page |
-| `esc` / `q` | Back to chapter list |
-| `ctrl+c` | Quit |
+| Phím | Chức năng |
+|------|-----------|
+| `→` / `l` | Trang tiếp |
+| `←` / `h` | Trang trước |
+| `ctrl+d` | Tải trang hiện tại |
+| `esc` / `q` | Về danh sách chapter |
+| `ctrl+c` | Thoát |
 
-## Data storage
+## Dữ liệu
 
-| Data | Location |
-|------|----------|
+| Dữ liệu | Đường dẫn |
+|---------|-----------|
 | Favorites | `~/.config/futon/favorites.json` |
-| Reading history | `~/.config/futon/history.json` |
-| Downloaded images | `~/Downloads/Futon_Downloads/` |
+| Lịch sử đọc | `~/.config/futon/history.json` |
+| Ảnh đã tải | `~/Downloads/Futon_Downloads/` |
 
-## Architecture
+## Kiến trúc
 
 ```
 cmd/main.go          — entry point
 internal/
   api/               — MangaProvider interface & HTTP clients
-  models/            — shared domain types
+  models/            — shared data types
   storage/           — JSON persistence (favorites, history)
   tui/               — Bubble Tea screens (search, chapters, reader)
   tui/imgrender/     — Kitty / Sixel renderer selection
 ```
 
-## License
+## Giấy phép
 
 MIT
