@@ -81,7 +81,7 @@ futon
 
 | Phím | Chức năng |
 |------|-----------|
-| `q` / `ctrl+c` | Thoát |
+| `ctrl+c` | Thoát |
 | `tab` | Chuyển nguồn manga |
 | `enter` | Tìm kiếm / mở truyện đang chọn |
 | `lên` / `xuống` | Di chuyển danh sách |
@@ -94,7 +94,7 @@ futon
 | Phím | Chức năng |
 |------|-----------|
 | `enter` | Mở truyện |
-| `d` | Xoá khỏi danh sách |
+| `ctrl+d` | Xoá khỏi danh sách |
 | `esc` | Quay lại tìm kiếm |
 
 #### Danh sách chapter
@@ -106,7 +106,7 @@ futon
 | `enter` | Mở chapter |
 | `[số] + enter` | Nhảy tới chapter |
 | `esc` | Quay lại tìm kiếm |
-| `q` / `ctrl+c` | Thoát |
+| `ctrl+c` | Thoát |
 
 #### Reader
 
@@ -115,7 +115,7 @@ futon
 | `→` / `l` | Trang tiếp |
 | `←` / `h` | Trang trước |
 | `ctrl+d` | Tải trang hiện tại |
-| `esc` / `q` | Về danh sách chapter |
+| `esc` | Về danh sách chapter |
 | `ctrl+c` | Thoát |
 
 ## Dữ liệu

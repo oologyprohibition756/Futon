@@ -87,13 +87,15 @@ The reader uses ANSI cursor positioning and explicit clear sequences (`\x1b_Ga=d
 ## Concurrency
 
 - Keep UI concurrency inside `tea.Cmd` functions; do not block `Update`.
-- History writes are debounced (2s) and flushed via `tea.Cmd`; `DeleteHistory` flushes immediately.
+- History writes are debounced (2s) and flushed via `tea.Cmd`; `DeleteHistory` delegates to `FlushHistory` for persistence.
 
 ## UI Conventions
 
 - Slash commands on the search screen: `/fav`, `/his`, `/lang vi|en`.
 - `esc` in `/fav` or `/his` returns to the search screen.
-- `d` in `/fav` removes a favorite; `d` in `/his` removes a history entry.
+- `ctrl+d` in `/fav` removes a favorite; `ctrl+d` in `/his` removes a history entry.
+- `h`/`l` for page navigation are **only** active in Reader mode (not caught by other screens).
+- `q` is **not** a keybinding anywhere — use `ctrl+c` to quit, `esc` to go back.
 - The search screen does **not** show cover images.
 - UI text is mixed Vietnamese and English; preserve existing wording unless asked to change it.
 
