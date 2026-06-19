@@ -220,26 +220,9 @@ func DeleteHistory(mangaID string) error {
 	}
 
 	delete(historyCache, mangaID)
-
-	// Copy snapshot và ghi file ngoài lock để tránh deadlock (FlushHistory lấy RLock).
-	snapshot := make([]ReadHistory, 0, len(historyCache))
-	for _, e := range historyCache {
-		snapshot = append(snapshot, e)
-	}
 	historyMu.Unlock()
 
-	path, err := historyPath()
-	if err != nil {
-		return err
-	}
-	data, err := json.MarshalIndent(snapshot, "", "  ")
-	if err != nil {
-		return fmt.Errorf("encode history: %w", err)
-	}
-	if err := os.WriteFile(path, data, 0o644); err != nil {
-		return fmt.Errorf("ghi file history: %w", err)
-	}
-	return nil
+	return FlushHistory()
 }
 
 // DeleteHistoryCmd trả về tea.Cmd để xóa lịch sử bất đồng bộ.
