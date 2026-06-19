@@ -25,7 +25,7 @@ func (m ReaderModel) handleKeyMsg(msg tea.KeyMsg) (ReaderModel, tea.Cmd) {
 	case "ctrl+c":
 		return m, tea.Quit
 
-	case "esc", "q":
+	case "esc":
 		return m, tea.Sequence(
 			storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.chapterID, m.chapterNumber, m.currentIdx),
 			storage.FlushHistoryCmd(),

@@ -12,7 +12,7 @@ import (
 
 func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 	switch msg.String() {
-	case "ctrl+c", "q":
+	case "ctrl+c":
 		return m, tea.Quit, true
 
 	case "tab":
@@ -66,7 +66,7 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 		}
 		return m, nil, true
 
-	case "d":
+	case "ctrl+d":
 		if m.showingFavorites && len(m.favorites) > 0 && m.cursor >= 0 && m.cursor < len(m.favorites) {
 			fav := m.favorites[m.cursor]
 			m.favorites = append(m.favorites[:m.cursor], m.favorites[m.cursor+1:]...)
@@ -160,16 +160,15 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 			}, true
 		}
 
-		query := strings.TrimSpace(m.input.Value())
-		if query == "" {
+		if val == "" {
 			return m, nil, true
 		}
 		m.showingFavorites = false
-		m.currentQuery = query
+		m.currentQuery = val
 		m.results = nil
 		m.err = nil
 		m.isSearching = true
-		return m, api.SearchCmd(m.CurrentProvider(), query), true
+		return m, api.SearchCmd(m.CurrentProvider(), val), true
 	}
 	return m, nil, false
 }
