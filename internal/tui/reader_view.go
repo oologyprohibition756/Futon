@@ -80,14 +80,8 @@ func (m ReaderModel) centerText(text string) string {
 
 func (m ReaderModel) imageRect(img imgrender.RenderedImage) (offsetX, offsetY, cellsW, cellsH int) {
 	ts, err := imgrender.GetTerminalSize()
-	if err != nil {
+	if err != nil || ts.Cols <= 0 || ts.Rows <= 0 {
 		ts = imgrender.TerminalSize{Cols: m.width, Rows: m.height, PxW: m.width * 8, PxH: m.height * 16}
-	}
-	if ts.Cols <= 0 {
-		ts.Cols = m.width
-	}
-	if ts.Rows <= 0 {
-		ts.Rows = m.height
 	}
 	if ts.PxW <= 0 {
 		ts.PxW = ts.Cols * 8

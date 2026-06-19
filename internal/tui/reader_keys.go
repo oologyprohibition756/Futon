@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"fmt"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -29,11 +28,7 @@ func (m ReaderModel) handleKeyMsg(msg tea.KeyMsg) (ReaderModel, tea.Cmd) {
 		return m, tea.Sequence(
 			storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.chapterID, m.chapterNumber, m.currentIdx),
 			storage.FlushHistoryCmd(),
-			func() tea.Msg {
-				fmt.Print("\x1b_Ga=d;\x1b\\")
-				fmt.Print("\x1b[H\x1b[2J")
-				return clearDoneMsg{}
-			},
+			clearScreenCmd(),
 			func() tea.Msg { return BackToChaptersMsg{} },
 		)
 
@@ -83,22 +78,8 @@ func (m ReaderModel) handleKeyMsg(msg tea.KeyMsg) (ReaderModel, tea.Cmd) {
 			m.step = stepLoadingNext
 			return m, tea.Sequence(
 				saveCmd,
-				func() tea.Msg {
-					fmt.Print("\x1b_Ga=d;\x1b\\")
-					fmt.Print("\x1b[H\x1b[2J")
-					return clearDoneMsg{}
-				},
-				func() tea.Msg {
-					return ViewChapterMsg{
-						MangaID:        m.mangaID,
-						MangaTitle:     m.mangaTitle,
-						ChapterID:      nextID,
-						ChapterNumber:  "",
-						AllChapterIDs:  m.allChapterIDs,
-						ChapterIndex:   m.chapterIndex + 1,
-						StartPageIndex: 0,
-					}
-				},
+				clearScreenCmd(),
+				nextChapterCmd(nextID, m.mangaID, m.mangaTitle, m.allChapterIDs, m.chapterIndex),
 			)
 		}
 		return m, nil
@@ -124,22 +105,8 @@ func (m ReaderModel) handleKeyMsg(msg tea.KeyMsg) (ReaderModel, tea.Cmd) {
 			m.step = stepLoadingNext
 			return m, tea.Sequence(
 				saveCmd,
-				func() tea.Msg {
-					fmt.Print("\x1b_Ga=d;\x1b\\")
-					fmt.Print("\x1b[H\x1b[2J")
-					return clearDoneMsg{}
-				},
-				func() tea.Msg {
-					return ViewChapterMsg{
-						MangaID:        m.mangaID,
-						MangaTitle:     m.mangaTitle,
-						ChapterID:      prevID,
-						ChapterNumber:  "",
-						AllChapterIDs:  m.allChapterIDs,
-						ChapterIndex:   m.chapterIndex - 1,
-						StartPageIndex: -2,
-					}
-				},
+				clearScreenCmd(),
+				prevChapterCmd(prevID, m.mangaID, m.mangaTitle, m.allChapterIDs, m.chapterIndex),
 			)
 		}
 		return m, nil

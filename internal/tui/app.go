@@ -106,16 +106,14 @@ func runInstallScriptCmd() tea.Cmd {
 func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		var searchCmd, chapterCmd, readerCmd tea.Cmd
-		var sm, cm, rm tea.Model
-		sm, searchCmd = m.search.Update(msg)
+		sm, sc := m.search.Update(msg)
 		m.search = sm.(SearchModel)
-		cm, chapterCmd = m.chapter.Update(msg)
+		cm, cc := m.chapter.Update(msg)
 		m.chapter = cm.(ChapterListModel)
-		rm, readerCmd = m.reader.Update(msg)
+		rm, rc := m.reader.Update(msg)
 		m.reader = rm.(ReaderModel)
 		m.syncProvider()
-		return m, tea.Batch(searchCmd, chapterCmd, readerCmd)
+		return m, tea.Batch(sc, cc, rc)
 
 	case ViewMangaMsg:
 		m.state = stateChapters

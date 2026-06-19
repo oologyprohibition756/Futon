@@ -86,9 +86,45 @@ func preloadNextChapter(nextID string, provider api.MangaProvider) tea.Cmd {
 	}
 }
 
+func nextChapterCmd(nextID, mangaID, mangaTitle string, allChapterIDs []string, chapterIndex int) tea.Cmd {
+	return func() tea.Msg {
+		return ViewChapterMsg{
+			MangaID:        mangaID,
+			MangaTitle:     mangaTitle,
+			ChapterID:      nextID,
+			ChapterNumber:  "",
+			AllChapterIDs:  allChapterIDs,
+			ChapterIndex:   chapterIndex + 1,
+			StartPageIndex: 0,
+		}
+	}
+}
+
+func prevChapterCmd(prevID, mangaID, mangaTitle string, allChapterIDs []string, chapterIndex int) tea.Cmd {
+	return func() tea.Msg {
+		return ViewChapterMsg{
+			MangaID:        mangaID,
+			MangaTitle:     mangaTitle,
+			ChapterID:      prevID,
+			ChapterNumber:  "",
+			AllChapterIDs:  allChapterIDs,
+			ChapterIndex:   chapterIndex - 1,
+			StartPageIndex: -2,
+		}
+	}
+}
+
 func clearGraphicsCmd() tea.Cmd {
 	return func() tea.Msg {
 		fmt.Print("\x1b_Ga=d;\x1b\\")
+		return clearDoneMsg{}
+	}
+}
+
+func clearScreenCmd() tea.Cmd {
+	return func() tea.Msg {
+		fmt.Print("\x1b_Ga=d;\x1b\\")
+		fmt.Print("\x1b[H\x1b[2J")
 		return clearDoneMsg{}
 	}
 }

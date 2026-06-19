@@ -26,6 +26,13 @@ func (m SearchModel) View() string {
 			sysStyle.Render(m.systemMsg))
 	}
 
+	statusStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("226")).
+		MarginTop(1)
+	subtleStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("240")).
+		MarginTop(1)
+
 	if m.err != nil {
 		errStyle := lipgloss.NewStyle().
 			Foreground(lipgloss.Color("196")).
@@ -33,21 +40,12 @@ func (m SearchModel) View() string {
 		errMsg := errStyle.Render(fmt.Sprintf("Lỗi: %v", m.err))
 		content = lipgloss.JoinVertical(lipgloss.Center, content, errMsg)
 	} else if m.isSearching {
-		statusStyle := lipgloss.NewStyle().
-			Foreground(lipgloss.Color("226")).
-			MarginTop(1)
 		content = lipgloss.JoinVertical(lipgloss.Center, content,
 			statusStyle.Render("Đang tìm kiếm..."))
 	} else if m.loadingFavorites {
-		statusStyle := lipgloss.NewStyle().
-			Foreground(lipgloss.Color("226")).
-			MarginTop(1)
 		content = lipgloss.JoinVertical(lipgloss.Center, content,
 			statusStyle.Render("Đang tải danh sách yêu thích..."))
 	} else if m.loadingHistory {
-		statusStyle := lipgloss.NewStyle().
-			Foreground(lipgloss.Color("226")).
-			MarginTop(1)
 		content = lipgloss.JoinVertical(lipgloss.Center, content,
 			statusStyle.Render("Đang tải lịch sử đọc..."))
 	} else if m.showingFavorites {
@@ -55,20 +53,13 @@ func (m SearchModel) View() string {
 	} else if m.showingHistory {
 		content = m.renderHistory(content)
 	} else if len(m.currentQuery) >= 3 && len(m.results) == 0 {
-		noResult := lipgloss.NewStyle().
-			Foreground(lipgloss.Color("240")).
-			MarginTop(1).
-			Render("Không tìm thấy kết quả.")
-		content = lipgloss.JoinVertical(lipgloss.Center, content, noResult)
+		content = lipgloss.JoinVertical(lipgloss.Center, content,
+			subtleStyle.Render("Không tìm thấy kết quả."))
 	}
 
 	if !m.showingFavorites && len(m.results) > 0 {
 		content = m.renderSearchResults(content)
 	}
-
-	hintStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("240")).
-		MarginTop(1)
 
 	sourceName := "?"
 	if p := m.CurrentProvider(); p != nil {
@@ -84,7 +75,7 @@ func (m SearchModel) View() string {
 	default:
 		footer = fmt.Sprintf("ctrl+c: thoát  |  /fav: truyện yêu thích  |  /his: lịch sử đọc  |  /lang: chỉnh ngôn ngữ  |  tab: đổi nguồn  |  Nguồn: %s", sourceName)
 	}
-	content = lipgloss.JoinVertical(lipgloss.Center, content, hintStyle.Render(footer))
+	content = lipgloss.JoinVertical(lipgloss.Center, content, subtleStyle.Render(footer))
 
 	placed := lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
 

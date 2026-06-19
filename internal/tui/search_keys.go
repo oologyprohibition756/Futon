@@ -67,7 +67,7 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 		return m, nil, true
 
 	case "ctrl+d":
-		if m.showingFavorites && len(m.favorites) > 0 && m.cursor >= 0 && m.cursor < len(m.favorites) {
+		if m.showingFavorites && len(m.favorites) > 0 && m.cursor < len(m.favorites) {
 			fav := m.favorites[m.cursor]
 			m.favorites = append(m.favorites[:m.cursor], m.favorites[m.cursor+1:]...)
 			if m.cursor >= len(m.favorites) && m.cursor > 0 {
@@ -79,7 +79,7 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 				clearFlashAfter(2*time.Second),
 			), true
 		}
-		if m.showingHistory && len(m.history) > 0 && m.cursor >= 0 && m.cursor < len(m.history) {
+		if m.showingHistory && len(m.history) > 0 && m.cursor < len(m.history) {
 			h := m.history[m.cursor]
 			m.history = append(m.history[:m.cursor], m.history[m.cursor+1:]...)
 			if m.cursor >= len(m.history) && m.cursor > 0 {
@@ -129,7 +129,7 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 			return m, loadHistoryCmd(), true
 		}
 
-		if m.showingFavorites && len(m.favorites) > 0 && m.cursor >= 0 && m.cursor < len(m.favorites) {
+		if m.showingFavorites && len(m.favorites) > 0 && m.cursor < len(m.favorites) {
 			fav := m.favorites[m.cursor]
 			m.showingFavorites = false
 			m.favorites = nil
@@ -139,7 +139,7 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 			}, true
 		}
 
-		if m.showingHistory && len(m.history) > 0 && m.cursor >= 0 && m.cursor < len(m.history) {
+		if m.showingHistory && len(m.history) > 0 && m.cursor < len(m.history) {
 			h := m.history[m.cursor]
 			m.showingHistory = false
 			m.history = nil
@@ -153,7 +153,7 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 			}, true
 		}
 
-		if len(m.results) > 0 && m.cursor >= 0 && m.cursor < len(m.results) {
+		if len(m.results) > 0 && m.cursor < len(m.results) {
 			manga := m.results[m.cursor]
 			return m, func() tea.Msg {
 				return ViewMangaMsg{MangaID: manga.ID, Title: manga.Title}
