@@ -5,9 +5,31 @@ import (
 	"fmt"
 	"net/http"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 )
+
+func versLE(a, b string) bool {
+	ap := strings.Split(a, ".")
+	bp := strings.Split(b, ".")
+	for i := 0; i < len(ap) || i < len(bp); i++ {
+		var ai, bi int
+		if i < len(ap) {
+			ai, _ = strconv.Atoi(ap[i])
+		}
+		if i < len(bp) {
+			bi, _ = strconv.Atoi(bp[i])
+		}
+		if ai > bi {
+			return false
+		}
+		if ai < bi {
+			return true
+		}
+	}
+	return true
+}
 
 const (
 	repoOwner = "KabosuNeko"
@@ -51,11 +73,11 @@ func CheckForUpdate(currentVersion string) (bool, string, string, error) {
 	latest := strings.TrimPrefix(rel.TagName, "v")
 	current := strings.TrimPrefix(currentVersion, "v")
 
-	if latest <= current {
+	if versLE(latest, current) {
 		return false, "", "", nil
 	}
 
-	wanted := fmt.Sprintf("futon_%s_%s_%s.tar.gz", rel.TagName, runtime.GOOS, runtime.GOARCH)
+	wanted := fmt.Sprintf("futon_%s_%s_%s.tar.gz", latest, runtime.GOOS, runtime.GOARCH)
 	var downloadURL string
 	for _, a := range rel.Assets {
 		if a.Name == wanted {

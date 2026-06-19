@@ -44,7 +44,8 @@ func TestCheckForUpdate_noNewVersion(t *testing.T) {
 
 func TestCheckForUpdate_hasUpdate(t *testing.T) {
 	tag := "v2.0.0"
-	wanted := fmt.Sprintf("futon_%s_%s_%s.tar.gz", tag, runtime.GOOS, runtime.GOARCH)
+	ver := strings.TrimPrefix(tag, "v")
+	wanted := fmt.Sprintf("futon_%s_%s_%s.tar.gz", ver, runtime.GOOS, runtime.GOARCH)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(releaseInfo{
 			TagName: tag,
