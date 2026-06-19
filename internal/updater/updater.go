@@ -17,11 +17,18 @@ import (
 const (
 	repoOwner = "KabosuNeko"
 	repoName  = "Futon"
-	apiURL    = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/releases/latest"
 )
 
+var apiURL = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/releases/latest"
+
 type releaseInfo struct {
-	TagName string `json:"tag_name"`
+	TagName string      `json:"tag_name"`
+	Assets  []releaseAsset `json:"assets"`
+}
+
+type releaseAsset struct {
+	Name               string `json:"name"`
+	BrowserDownloadURL string `json:"browser_download_url"`
 }
 
 func CheckForUpdate(currentVersion string) (bool, string, string, error) {
@@ -37,6 +44,10 @@ func CheckForUpdate(currentVersion string) (bool, string, string, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return false, "", "", fmt.Errorf("check update failed, HTTP status: %d", resp.StatusCode)
+	}
+
 	var rel releaseInfo
 	if err := json.NewDecoder(resp.Body).Decode(&rel); err != nil {
 		return false, "", "", fmt.Errorf("failed to parse release info: %w", err)
@@ -49,19 +60,17 @@ func CheckForUpdate(currentVersion string) (bool, string, string, error) {
 		return false, "", "", nil
 	}
 
-	osName := runtime.GOOS
-	if osName == "darwin" {
-		osName = "macOS"
+	wanted := fmt.Sprintf("futon_%s_%s_%s.tar.gz", rel.TagName, runtime.GOOS, runtime.GOARCH)
+	var downloadURL string
+	for _, a := range rel.Assets {
+		if a.Name == wanted {
+			downloadURL = a.BrowserDownloadURL
+			break
+		}
 	}
-
-	arch := runtime.GOARCH
-	if arch == "aarch64" {
-		arch = "arm64"
+	if downloadURL == "" {
+		return false, "", "", fmt.Errorf("no asset found for %s", wanted)
 	}
-
-	filename := fmt.Sprintf("futon_%s_%s_%s.tar.gz", rel.TagName, osName, arch)
-	downloadURL := fmt.Sprintf("https://github.com/%s/%s/releases/download/%s/%s",
-		repoOwner, repoName, rel.TagName, filename)
 
 	return true, rel.TagName, downloadURL, nil
 }
@@ -86,7 +95,29 @@ func ApplyUpdate(downloadURL string) error {
 	}
 	defer resp.Body.Close()
 
-	gzr, err := gzip.NewReader(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to download update, HTTP status: %d", resp.StatusCode)
+	}
+
+	tmpArc, err := os.CreateTemp(tmpDir, "futon_update_*.tar.gz")
+	if err != nil {
+		return fmt.Errorf("failed to create temp archive file: %w", err)
+	}
+	defer os.Remove(tmpArc.Name())
+
+	if _, err := io.Copy(tmpArc, resp.Body); err != nil {
+		tmpArc.Close()
+		return fmt.Errorf("failed to save archive: %w", err)
+	}
+	tmpArc.Close()
+
+	f, err := os.Open(tmpArc.Name())
+	if err != nil {
+		return fmt.Errorf("failed to open saved archive: %w", err)
+	}
+	defer f.Close()
+
+	gzr, err := gzip.NewReader(f)
 	if err != nil {
 		return fmt.Errorf("failed to create gzip reader: %w", err)
 	}
