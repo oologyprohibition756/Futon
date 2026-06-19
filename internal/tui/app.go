@@ -2,6 +2,8 @@ package tui
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/KabosuNeko/Futon/internal/api"
@@ -90,11 +92,15 @@ func checkForUpdateCmd(currentVersion string) tea.Cmd {
 	}
 }
 
-func applyUpdateCmd(downloadURL string) tea.Cmd {
-	return func() tea.Msg {
-		err := updater.ApplyUpdate(downloadURL)
+func runInstallScriptCmd() tea.Cmd {
+	cmdStr := "curl -sSL https://raw.githubusercontent.com/KabosuNeko/Futon/main/install.sh -o /tmp/futon_install.sh && bash /tmp/futon_install.sh && rm /tmp/futon_install.sh"
+	c := exec.Command("bash", "-c", cmdStr)
+	c.Stdin = os.Stdin
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	return tea.ExecProcess(c, func(err error) tea.Msg {
 		return UpdateReadyMsg{Err: err}
-	}
+	})
 }
 
 func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -138,13 +144,10 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case UpdateReadyMsg:
 		if msg.Err != nil {
 			m.updateError = msg.Err
-			m.state = stateSearch
-			return m, nil
 		}
 		m.updateSuccess = true
 		m.updateAvailable = false
-		m.state = stateSearch
-		return m, nil
+		return m, tea.Quit
 
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -153,7 +156,7 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "U":
 			if m.updateAvailable && m.state == stateSearch {
 				m.state = stateUpdating
-				return m, applyUpdateCmd(m.updateURL)
+				return m, runInstallScriptCmd()
 			}
 			return m, nil
 		}
@@ -196,10 +199,7 @@ func (m *AppModel) syncProvider() {
 
 func (m AppModel) View() string {
 	if m.state == stateUpdating {
-		if m.updateError != nil {
-			return fmt.Sprintf("Cập nhật thất bại: %v\nNhấn Enter để tiếp tục.", m.updateError)
-		}
-		return fmt.Sprintf("Đang tải và cập nhật lên %s...", m.updateVersion)
+		return "Đang cập nhật...\n"
 	}
 
 	var updateBanner string
