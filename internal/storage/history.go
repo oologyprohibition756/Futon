@@ -17,6 +17,7 @@ import (
 type ReadHistory struct {
 	MangaID       string `json:"manga_id"`
 	MangaTitle    string `json:"manga_title,omitempty"`
+	Provider      string `json:"provider,omitempty"`
 	ChapterID     string `json:"chapter_id"`
 	ChapterNumber string `json:"chapter_number,omitempty"`
 	PageIndex     int    `json:"page_index"`
@@ -80,7 +81,7 @@ func loadHistory() error {
 
 // SaveHistory cập nhật cache trong bộ nhớ và lên lịch flush ra đĩa.
 // Không block UI vì Bubble Tea chạy tea.Cmd trong goroutine.
-func SaveHistory(mangaID, mangaTitle, chapterID, chapterNumber string, pageIndex int) error {
+func SaveHistory(mangaID, mangaTitle, provider, chapterID, chapterNumber string, pageIndex int) error {
 	if mangaID == "" || chapterID == "" {
 		return nil
 	}
@@ -105,6 +106,7 @@ func SaveHistory(mangaID, mangaTitle, chapterID, chapterNumber string, pageIndex
 	historyCache[mangaID] = ReadHistory{
 		MangaID:       mangaID,
 		MangaTitle:    mangaTitle,
+		Provider:      provider,
 		ChapterID:     chapterID,
 		ChapterNumber: chapterNumber,
 		PageIndex:     pageIndex,
@@ -116,9 +118,9 @@ func SaveHistory(mangaID, mangaTitle, chapterID, chapterNumber string, pageIndex
 }
 
 // SaveHistoryCmd trả về tea.Cmd để lưu lịch sử bất đồng bộ.
-func SaveHistoryCmd(mangaID, mangaTitle, chapterID, chapterNumber string, pageIndex int) tea.Cmd {
+func SaveHistoryCmd(mangaID, mangaTitle, provider, chapterID, chapterNumber string, pageIndex int) tea.Cmd {
 	return func() tea.Msg {
-		return HistorySavedMsg{Err: SaveHistory(mangaID, mangaTitle, chapterID, chapterNumber, pageIndex)}
+		return HistorySavedMsg{Err: SaveHistory(mangaID, mangaTitle, provider, chapterID, chapterNumber, pageIndex)}
 	}
 }
 
@@ -140,6 +142,7 @@ func GetHistory(mangaID string) (*ReadHistory, bool) {
 	return &ReadHistory{
 		MangaID:       h.MangaID,
 		MangaTitle:    h.MangaTitle,
+		Provider:      h.Provider,
 		ChapterID:     h.ChapterID,
 		ChapterNumber: h.ChapterNumber,
 		PageIndex:     h.PageIndex,
@@ -161,6 +164,7 @@ func LoadAllHistory() ([]ReadHistory, error) {
 		entries = append(entries, ReadHistory{
 			MangaID:       e.MangaID,
 			MangaTitle:    e.MangaTitle,
+			Provider:      e.Provider,
 			ChapterID:     e.ChapterID,
 			ChapterNumber: e.ChapterNumber,
 			PageIndex:     e.PageIndex,
@@ -207,7 +211,6 @@ func FlushHistoryCmd() tea.Cmd {
 	}
 }
 
-// DeleteHistory xóa lịch sử đọc của một bộ truyện.
 func DeleteHistory(mangaID string) error {
 	if mangaID == "" {
 		return nil

@@ -7,7 +7,7 @@ import (
 func TestSaveAndGetHistory(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 
-	if err := SaveHistory("m1", "Title", "c1", "1", 5); err != nil {
+	if err := SaveHistory("m1", "Title", "otruyen", "c1", "1", 5); err != nil {
 		t.Fatalf("SaveHistory error: %v", err)
 	}
 
@@ -25,10 +25,10 @@ func TestSaveAndGetHistory(t *testing.T) {
 
 func TestSaveHistoryKeepsOldTitle(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	if err := SaveHistory("m1", "Original", "c1", "1", 0); err != nil {
+	if err := SaveHistory("m1", "Original", "otruyen", "c1", "1", 0); err != nil {
 		t.Fatalf("SaveHistory error: %v", err)
 	}
-	if err := SaveHistory("m1", "", "c2", "2", 3); err != nil {
+	if err := SaveHistory("m1", "", "otruyen", "c2", "2", 3); err != nil {
 		t.Fatalf("SaveHistory error: %v", err)
 	}
 
@@ -46,7 +46,7 @@ func TestSaveHistoryKeepsOldTitle(t *testing.T) {
 
 func TestDeleteHistory(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	if err := SaveHistory("m1", "Title", "c1", "1", 0); err != nil {
+	if err := SaveHistory("m1", "Title", "otruyen", "c1", "1", 0); err != nil {
 		t.Fatalf("SaveHistory error: %v", err)
 	}
 	if err := DeleteHistory("m1"); err != nil {

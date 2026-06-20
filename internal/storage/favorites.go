@@ -9,8 +9,9 @@ import (
 )
 
 type FavoriteManga struct {
-	MangaID string `json:"manga_id"`
-	Title   string `json:"title"`
+	MangaID  string `json:"manga_id"`
+	Title    string `json:"title"`
+	Provider string `json:"provider,omitempty"`
 }
 
 func ConfigDir() (string, error) {
