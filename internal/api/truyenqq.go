@@ -69,19 +69,16 @@ func (p *TruyenQQProvider) discoverFromLink() string {
 		if !exists {
 			return
 		}
-		hrefLower := strings.ToLower(href)
-		text := strings.ToLower(s.Text())
-		if strings.Contains(hrefLower, "metruyenqq") ||
-			strings.Contains(hrefLower, "truyenqqto") ||
-			strings.Contains(hrefLower, "truyenqqko") ||
-			strings.Contains(hrefLower, "truyenqq.") {
-			found = strings.TrimRight(href, "/")
+		lower := strings.ToLower(href)
+		if !strings.Contains(lower, "truyenqq") ||
+			strings.Contains(lower, "truyenqq.link") {
+			return
 		}
-		if strings.Contains(text, "metruyenqq") ||
-			strings.Contains(text, "truyenqqto") ||
-			strings.Contains(text, "truyenqqko") {
-			found = strings.TrimRight(href, "/")
+		u, err := url.Parse(href)
+		if err != nil || u.Scheme == "" || u.Host == "" {
+			return
 		}
+		found = u.Scheme + "://" + u.Host
 	})
 	return found
 }
