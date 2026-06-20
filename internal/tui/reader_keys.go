@@ -26,7 +26,7 @@ func (m ReaderModel) handleKeyMsg(msg tea.KeyMsg) (ReaderModel, tea.Cmd) {
 
 	case "esc":
 		return m, tea.Sequence(
-			storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.chapterID, m.chapterNumber, m.currentIdx),
+			storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.provider.Name(), m.chapterID, m.chapterNumber, m.currentIdx),
 			storage.FlushHistoryCmd(),
 			clearScreenCmd(),
 			func() tea.Msg { return BackToChaptersMsg{} },
@@ -53,7 +53,7 @@ func (m ReaderModel) handleKeyMsg(msg tea.KeyMsg) (ReaderModel, tea.Cmd) {
 			var cmds []tea.Cmd
 			m, pageCmds := m.loadCurrentPage()
 			cmds = append(cmds, pageCmds...)
-			cmds = append(cmds, storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.chapterID, m.chapterNumber, m.currentIdx))
+			cmds = append(cmds, storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.provider.Name(), m.chapterID, m.chapterNumber, m.currentIdx))
 			if m.currentIdx == m.total-3 && !m.isPreloadingNext && m.hasNextChapter() {
 				m.isPreloadingNext = true
 				nextID := m.allChapterIDs[m.chapterIndex+1]
@@ -62,13 +62,13 @@ func (m ReaderModel) handleKeyMsg(msg tea.KeyMsg) (ReaderModel, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 		} else if m.hasNextChapter() {
 			nextID := m.allChapterIDs[m.chapterIndex+1]
-			saveCmd := storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.chapterID, m.chapterNumber, m.currentIdx)
+			saveCmd := storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.provider.Name(), m.chapterID, m.chapterNumber, m.currentIdx)
 
 			if m.preloadedChapID == nextID && len(m.preloadedURLs) > 0 {
 				m.applyPreloadedChapter(nextID)
 				return m, tea.Sequence(
 					saveCmd,
-					storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.chapterID, m.chapterNumber, 0),
+					storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.provider.Name(), m.chapterID, m.chapterNumber, 0),
 					clearGraphicsCmd(),
 					func() tea.Msg { return preloadTransitionReadyMsg{} },
 				)
@@ -95,11 +95,11 @@ func (m ReaderModel) handleKeyMsg(msg tea.KeyMsg) (ReaderModel, tea.Cmd) {
 			var cmds []tea.Cmd
 			m, pageCmds := m.loadCurrentPage()
 			cmds = append(cmds, pageCmds...)
-			cmds = append(cmds, storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.chapterID, m.chapterNumber, m.currentIdx))
+			cmds = append(cmds, storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.provider.Name(), m.chapterID, m.chapterNumber, m.currentIdx))
 			return m, tea.Batch(cmds...)
 		} else if m.hasPreviousChapter() {
 			prevID := m.allChapterIDs[m.chapterIndex-1]
-			saveCmd := storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.chapterID, m.chapterNumber, m.currentIdx)
+			saveCmd := storage.SaveHistoryCmd(m.mangaID, m.mangaTitle, m.provider.Name(), m.chapterID, m.chapterNumber, m.currentIdx)
 
 			m.clearPreloaded()
 			m.step = stepLoadingNext

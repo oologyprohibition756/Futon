@@ -11,8 +11,9 @@ import (
 )
 
 type ViewMangaMsg struct {
-	MangaID string
-	Title   string
+	MangaID      string
+	Title        string
+	ProviderName string
 }
 
 type BackToSearchMsg struct{}
@@ -120,6 +121,7 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case ViewMangaMsg:
 		m.state = stateChapters
+		m.currentProvider = m.findProvider(msg.ProviderName)
 		m.chapter = NewChapterListModel(msg.MangaID, msg.Title, m.currentProvider)
 		return m, m.chapter.Init()
 
@@ -190,6 +192,18 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	default:
 		return m, nil
 	}
+}
+
+func (m *AppModel) findProvider(name string) api.MangaProvider {
+	for _, p := range m.providers {
+		if p.Name() == name {
+			return p
+		}
+	}
+	if len(m.providers) > 0 {
+		return m.providers[0]
+	}
+	return nil
 }
 
 func (m *AppModel) syncProvider() {
