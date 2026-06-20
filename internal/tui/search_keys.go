@@ -16,13 +16,15 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 		return m, tea.Quit, true
 
 	case "tab":
-		if len(m.providers) <= 1 {
-			return m, nil, true
+		m.providerIdx++
+		if m.providerIdx >= len(m.providers) {
+			m.providerIdx = -1
 		}
-		m.providerIdx = (m.providerIdx + 1) % len(m.providers)
 
-		if p, ok := m.providers[m.providerIdx].(*api.MangaDexProvider); ok {
-			p.SetLang(m.chapterLang)
+		if m.providerIdx >= 0 {
+			if p, ok := m.providers[m.providerIdx].(*api.MangaDexProvider); ok {
+				p.SetLang(m.chapterLang)
+			}
 		}
 
 		m.showingFavorites = false
@@ -35,6 +37,9 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 
 		if len(strings.TrimSpace(m.currentQuery)) >= 3 {
 			m.isSearching = true
+			if m.providerIdx < 0 {
+				return m, api.GlobalSearchCmd(m.providers, m.currentQuery), true
+			}
 			return m, api.SearchCmd(m.CurrentProvider(), m.currentQuery), true
 		}
 		return m, nil, true
@@ -134,8 +139,12 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 			m.showingFavorites = false
 			m.favorites = nil
 			m.cursor = 0
+			providerName := fav.Provider
+			if providerName == "" && len(m.providers) > 0 {
+				providerName = m.providers[0].Name()
+			}
 			return m, func() tea.Msg {
-				return ViewMangaMsg{MangaID: fav.MangaID, Title: fav.Title}
+				return ViewMangaMsg{MangaID: fav.MangaID, Title: fav.Title, ProviderName: providerName}
 			}, true
 		}
 
@@ -148,15 +157,27 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 			if title == "" {
 				title = h.MangaID
 			}
+			providerName := h.Provider
+			if providerName == "" && len(m.providers) > 0 {
+				providerName = m.providers[0].Name()
+			}
 			return m, func() tea.Msg {
-				return ViewMangaMsg{MangaID: h.MangaID, Title: title}
+				return ViewMangaMsg{MangaID: h.MangaID, Title: title, ProviderName: providerName}
 			}, true
 		}
 
 		if len(m.results) > 0 && m.cursor < len(m.results) {
 			manga := m.results[m.cursor]
+			providerName := manga.Provider
+			if providerName == "" {
+				if p := m.CurrentProvider(); p != nil {
+					providerName = p.Name()
+				} else if len(m.providers) > 0 {
+					providerName = m.providers[0].Name()
+				}
+			}
 			return m, func() tea.Msg {
-				return ViewMangaMsg{MangaID: manga.ID, Title: manga.Title}
+				return ViewMangaMsg{MangaID: manga.ID, Title: manga.Title, ProviderName: providerName}
 			}, true
 		}
 
@@ -168,6 +189,9 @@ func (m SearchModel) handleKeyMsg(msg tea.KeyMsg) (SearchModel, tea.Cmd, bool) {
 		m.results = nil
 		m.err = nil
 		m.isSearching = true
+		if m.providerIdx < 0 {
+			return m, api.GlobalSearchCmd(m.providers, val), true
+		}
 		return m, api.SearchCmd(m.CurrentProvider(), val), true
 	}
 	return m, nil, false

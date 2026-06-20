@@ -61,9 +61,11 @@ func (m SearchModel) View() string {
 		content = m.renderSearchResults(content)
 	}
 
-	sourceName := "?"
-	if p := m.CurrentProvider(); p != nil {
-		sourceName = p.Name()
+	sourceName := "All"
+	if m.providerIdx >= 0 {
+		if p := m.CurrentProvider(); p != nil {
+			sourceName = p.Name()
+		}
 	}
 
 	var footer string

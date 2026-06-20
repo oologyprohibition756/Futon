@@ -43,18 +43,13 @@ func NewSearchModel(providers []api.MangaProvider) SearchModel {
 	ti.CharLimit = 156
 	ti.Width = 40
 
-	idx := 0
-	if len(providers) == 0 {
-		idx = -1
-	}
-
 	return SearchModel{
 		input:       ti,
 		width:       80,
 		height:      24,
 		chapterLang: "vi",
 		providers:   providers,
-		providerIdx: idx,
+		providerIdx: -1, // -1 = "All" (tìm kiếm tất cả nguồn)
 	}
 }
 
@@ -101,6 +96,9 @@ func (m SearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case searchTriggerMsg:
 		if msg.query == m.currentQuery && len(strings.TrimSpace(msg.query)) >= 3 {
 			m.isSearching = true
+			if m.providerIdx < 0 {
+				return m, tea.Batch(cmd, api.GlobalSearchCmd(m.providers, msg.query))
+			}
 			return m, tea.Batch(cmd, api.SearchCmd(m.CurrentProvider(), msg.query))
 		}
 		return m, nil
@@ -110,6 +108,16 @@ func (m SearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg.Err != nil {
 			m.err = msg.Err
 			return m, nil
+		}
+		if len(strings.TrimSpace(m.currentQuery)) < 3 {
+			return m, nil
+		}
+		if m.providerIdx >= 0 {
+			provider := m.providers[m.providerIdx]
+			for i := range msg.Manga {
+				msg.Manga[i].Title = fmt.Sprintf("%s (%s)", msg.Manga[i].Title, strings.ToLower(provider.Name()))
+				msg.Manga[i].Provider = provider.Name()
+			}
 		}
 		m.results = msg.Manga
 		m.cursor = 0
