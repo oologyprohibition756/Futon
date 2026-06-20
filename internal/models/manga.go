@@ -1,9 +1,8 @@
 package models
 
 type Manga struct {
-	ID        string
-	Title     string
-	CoverURL  string
+	ID    string
+	Title string
 }
 
 type MangaSearchResponse struct {
